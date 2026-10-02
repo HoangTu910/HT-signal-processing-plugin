@@ -1,4 +1,4 @@
-#include "ibiquad.hpp"
+#include "Ibiquad.hpp"
 
 void IBiquad::ProcessBlock(DSPBlock *dsp_block)
 {

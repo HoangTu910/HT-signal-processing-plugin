@@ -11,7 +11,7 @@ DSPPipeline::~DSPPipeline()
 {
 }
 
-HtspErrRet DSPPipeline::ConfigDSPPipeline(IDSPModule **list_of_modules,
+HtspErrRet DSPPipeline::ConfigDSPPipeline(IRtafeModule **list_of_modules,
                                           u16 num_modules,
                                           ChannelId channel_id)
 {
@@ -33,7 +33,7 @@ HtspErrRet DSPPipeline::ProcessDSPPipeline(DSPBlock *dsp_block)
     }
 
     for(u16 i = 0; i < num_modules_; i++) {
-        IDSPModule *module = processing_chain_[i];
+        IRtafeModule *module = processing_chain_[i];
         if(module == nullptr) {
             return kErrorNullModuleParam;
         }
@@ -50,7 +50,7 @@ HtspErrRet DSPPipeline::ProcessDSPPipelineFixed(DSPBlock *dsp_block)
     }
 
     for (u16 i = 0; i < num_modules_; i++) {
-        IDSPModule *module = processing_chain_[i];
+        IRtafeModule *module = processing_chain_[i];
         if (module == nullptr) {
             return kErrorNullModuleParam;
         }

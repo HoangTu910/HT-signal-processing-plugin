@@ -136,27 +136,27 @@ HtspErrRet HTSPPlugin::ProcessFixed(sample_t **in_buf, u16 num_channels)
 
 void HTSPPlugin::SetPipeline()
 {
-    IDSPModule *left_front_modules[] = {
+    IRtafeModule *left_front_modules[] = {
         &dc_removal_modules_[0],
         &pre_emphasis_modules_[0],
         &noise_suppress_modules_[0]
     };
     SetChannelPipeline(ChannelId::kLeftFront, left_front_modules, 3);
 
-    IDSPModule *right_front_modules[] = {
+    IRtafeModule *right_front_modules[] = {
         &dc_removal_modules_[1],
         &pre_emphasis_modules_[1]
     };
     SetChannelPipeline(ChannelId::kRightFront, right_front_modules, 2);
 
-    IDSPModule *left_rear_modules[] = {
+    IRtafeModule *left_rear_modules[] = {
         &dc_removal_modules_[2],
         &pre_emphasis_modules_[2],
         &noise_suppress_modules_[2]
     };
     SetChannelPipeline(ChannelId::kLeftRear, left_rear_modules, 3);
 
-    IDSPModule *right_rear_modules[] = {
+    IRtafeModule *right_rear_modules[] = {
         &dc_removal_modules_[3],
         &noise_suppress_modules_[3]
     };
@@ -164,7 +164,7 @@ void HTSPPlugin::SetPipeline()
 }
 
 HtspErrRet HTSPPlugin::SetChannelPipeline(ChannelId channel_id,
-                                           IDSPModule *const *modules,
+                                           IRtafeModule *const *modules,
                                            u16 num_modules)
 {
     int channel = ChannelIndex(channel_id);

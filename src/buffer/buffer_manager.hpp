@@ -27,7 +27,14 @@ public:
     void* Alloc();
     void  Free(void *buffer);
 private:
+#ifdef RTAFE_BARE_METAL
+    static constexpr u16 kBareMetalBlockSize = BLOCK_SIZE * sizeof(sample_t);
+    static constexpr u16 kBareMetalBlockCount = 2;
+    alignas(8) u8 bare_metal_memory_[kBareMetalBlockSize * kBareMetalBlockCount];
+    MemoryPool bare_metal_pool_;
+#else
     MemoryPool *mem_pool_;
+#endif
 };
 
 #endif /* BUFFER_POOL_HPP */

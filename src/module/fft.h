@@ -2,7 +2,9 @@
 #define FFT_H
 
 #include <stdint.h>
+#ifndef RTAFE_BARE_METAL
 #include <math.h>
+#endif
 #include "utils.hpp"
 
 #ifdef __cplusplus

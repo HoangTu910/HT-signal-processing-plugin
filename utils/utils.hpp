@@ -2,7 +2,17 @@
 #define UTILS_HPP
 
 #include <stdint.h>
+#ifdef RTAFE_BARE_METAL
+#ifdef __cplusplus
+extern "C" {
+#endif
+float roundf(float value);
+#ifdef __cplusplus
+}
+#endif
+#else
 #include <math.h>
+#endif
 
 typedef uint8_t  u8;
 typedef uint32_t u32;

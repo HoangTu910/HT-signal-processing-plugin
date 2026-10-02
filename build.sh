@@ -142,7 +142,7 @@ CXX_SRCS=(
     "$MODULE_DIR/dc_removal.cpp"
     "$MODULE_DIR/pre_emphasis.cpp"
     "$MODULE_DIR/noise_suppress.cpp"
-    "$INTERFACE_DIR/idsp_module.cpp"
+    "$INTERFACE_DIR/IRtafe_module.cpp"
     "$BUFFER_DIR/buffer_manager.cpp"
     "$BUFFER_DIR/dsp_block.cpp"
     "$WAV_DIR/wav_file_mgr.cpp"

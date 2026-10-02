@@ -1,7 +1,7 @@
 #ifndef PRE_EMPHASIS_HPP
 #define PRE_EMPHASIS_HPP
 
-#include "idsp_module.hpp"
+#include "IRtafe_module.hpp"
 #include "errors_code.hpp"
 
 struct PreEmState {
@@ -9,7 +9,7 @@ struct PreEmState {
     float y[2];
 };
 
-class PreEmphasis : public IDSPModule {
+class PreEmphasis : public IRtafeModule {
 public:
     PreEmphasis(float pre_emphasis_factor = 0.97f);
     ~PreEmphasis() override = default;

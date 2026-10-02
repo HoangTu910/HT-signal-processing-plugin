@@ -51,7 +51,7 @@
  * N(f) is the estimated noise spectrum, Y(f) is the noisy spectrum, 
  * alpha is the over-subtraction factor, and beta is the spectral floor to prevent musical noise */
 
-#include "idsp_module.hpp"
+#include "IRtafe_module.hpp"
 #include "utils.hpp"
 #include "errors_code.hpp"
 #include "fft.h"
@@ -85,7 +85,7 @@ typedef struct MinStatState {
     int   min_buf_cnt = 0;
 } MinStatState;
 
-class NoiseSuppress : public IDSPModule {
+class NoiseSuppress : public IRtafeModule {
 public:
     NoiseSuppress();
     ~NoiseSuppress() override = default;

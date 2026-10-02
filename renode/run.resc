@@ -1,0 +1,12 @@
+mach create
+machine LoadPlatformDescription @renode/lm3s6965.repl
+sysbus LoadELF @bin/renode/htsp_renode.elf
+start
+sleep 100
+sysbus ReadDoubleWord 0x2007FF00
+sysbus ReadDoubleWord 0x2007FF04
+sysbus ReadDoubleWord 0x2007FF08
+sysbus ReadDoubleWord 0x2007FF0C
+sysbus ReadDoubleWord 0x2007FF10
+sysbus ReadDoubleWord 0x2007FF14
+q

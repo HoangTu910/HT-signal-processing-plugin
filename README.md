@@ -13,6 +13,26 @@ And yes, no vibe-coding in this project, maybe I will need some help from AI (st
 No ADC or DAC for now (maybe I will do it in the future). It just purely reads the .wav file, starts the processing, and then gives the output .wav file. Reading all data in the .wav file into a buffer array and then processing it would not be sufficient. In the case of a 0 - 1 second WAV file, it still works fine, but imagine 3 or 5 minutes at a 48 kHz sampling rate, the buffer needed to store those data would be too large. So this module will process each frame of the .wav file, frame length is about 5-10 ms with 50% overlapping (the overlap size can be adjusted). It will perform as follows: Read the .wav file, extract the data frame, check the current state of the .wav file, process the frame, output the frame, merge the output frame to the output .wav file, and continue until the end of the .wav file. With this frame-based processing, the memory needed for each processing loop will be reduced. Of course, there will be a trade-off between memory and speed (you know, some more latencies for accessing the memory and allocating it); choosing the appropriate frame size for the module is required to give the best performance.
 
 ## Build & Run
+
+## Project structure
+
+The DSP core remains C++ and is packaged as a static library. Integration
+boundaries are kept separate from the core:
+
+```text
+audio_reach/   Public AudioReach-facing headers (CAPIv2 placeholder)
+src/audio_reach/       AudioReach CAPIv2 adapter boundary
+src/interface/         Internal C++ module interfaces
+src/module/            DSP implementations
+src/pipeline/          DSP pipeline composition
+src/plugin/            HTSP plugin orchestration
+renode/                Cortex-M3 harness and platform files
+lib/                   Static-library build script and output
+```
+
+The AudioReach adapter is intentionally not implemented yet and is not part of
+the current library source list.
+
 The current skeleton implementation for this project is *test_benchmark.c*. You can go to that file and enable any module flag you want to run, remember to config the module first before running. The build script will only build that source file for testing.
 
 For more infomation about build script, please run:

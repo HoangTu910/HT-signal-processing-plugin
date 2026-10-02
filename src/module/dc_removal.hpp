@@ -1,7 +1,7 @@
 #ifndef DC_REMOVAL_HPP
 #define DC_REMOVAL_HPP
 
-#include "idsp_module.hpp"
+#include "IRtafe_module.hpp"
 #include "utils.hpp"
 #include "dsp_block.hpp"
 #include "errors_code.hpp"
@@ -16,7 +16,7 @@ typedef struct {
     float y[2];
 } DCRemovalState;
 
-class DCRemoval : public IDSPModule {
+class DCRemoval : public IRtafeModule {
 public:
     DCRemoval(float alpha = 0.995f);
     ~DCRemoval();

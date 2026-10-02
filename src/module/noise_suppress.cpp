@@ -1,7 +1,15 @@
 #include "noise_suppress.hpp"
+#ifndef RTAFE_BARE_METAL
 #include <cstdio>
 #include <cstring>
 #include <cmath>
+#else
+extern "C" {
+void *memset(void *destination, int value, unsigned long size);
+void *memcpy(void *destination, const void *source, unsigned long size);
+float fmaxf(float left, float right);
+}
+#endif
 
 NoiseSuppress::NoiseSuppress()
     : min_stat_state_{}

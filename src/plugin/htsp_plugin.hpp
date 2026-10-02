@@ -1,7 +1,7 @@
 #ifndef HTSP_PLUGIN_HPP
 #define HTSP_PLUGIN_HPP
 
-#include "idsp_module.hpp"
+#include "IRtafe_module.hpp"
 #include "dsp_pipeline.hpp"
 #include "utils.hpp"
 #include "pre_emphasis.hpp"
@@ -27,7 +27,7 @@ public:
     /* main process function with full dsp pipeline*/
     void       SetPipeline();
     HtspErrRet SetChannelPipeline(ChannelId channel_id,
-                                  IDSPModule *const *modules,
+                                  IRtafeModule *const *modules,
                                   u16 num_modules);
     HtspErrRet SetParams();
     HtspErrRet Process(sample_t **in_buf, u16 num_channels);
@@ -37,7 +37,7 @@ private:
     DCRemoval     dc_removal_modules_[HTSP_MAX_CHANNELS];
     PreEmphasis   pre_emphasis_modules_[HTSP_MAX_CHANNELS];
     NoiseSuppress noise_suppress_modules_[HTSP_MAX_CHANNELS];
-    IDSPModule   *channel_modules_[HTSP_MAX_CHANNELS][HTSP_MAX_MODULES];
+    IRtafeModule *channel_modules_[HTSP_MAX_CHANNELS][HTSP_MAX_MODULES];
     BufferManager buffer_manager_;
     DSPPipeline   channel_pipelines_[HTSP_MAX_CHANNELS];
 };
