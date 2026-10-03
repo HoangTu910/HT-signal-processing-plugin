@@ -5,55 +5,113 @@
  * y[n] = x[n] - x[n - 1] + alpha * y[n - 1]
  */
 
-DCRemoval::DCRemoval(float alpha)
-    : alpha_(0.0f)
-    , alpha_fixed_(0)
-    , state_{}
+rtafe_module_status_t DCRemoval::Process(const rtafe_process_buf_t *input,
+                                         rtafe_process_buf_t *output)
 {
-    SetCoeffs(alpha);
-}
-
-DCRemoval::~DCRemoval() = default;
-
-HtspErrRet DCRemoval::SetParams(const DSPModuleParams *params, u16 param_count)
-{
-    if (params == nullptr) return kErrorNullModuleParam;
-
-    if (param_count != DC_MODULE_PARAMS_COUNT) {
-        return kErrorInvalidModuleParam;
+    if (input == nullptr || output == nullptr || input->buffer == nullptr ||
+        output->buffer == nullptr || input->buf_size != output->buf_size ||
+        input->buf_size != properties_.frame_samples) {
+        return kRtafeStatusInvalidBuffer;
     }
 
-    SetCoeffs(*params);
-    return kOk;
-}
+    rtafe_sample_t *in_buf =
+        static_cast<rtafe_sample_t *>(input->buffer);
+    rtafe_sample_t *out_buf =
+        static_cast<rtafe_sample_t *>(output->buffer);
 
-void DCRemoval::ProcessBlock(DSPBlock *dsp_block)
-{
-    sample_t *in_buf = dsp_block->GetDSPBuffer();
-    for(int i = 0; i < dsp_block->GetBlockSize(); i++) {
-        float in = in_buf[i];
-        float out = in - state_.x[0] + alpha_ * state_.y[0];
+    for (size_t i = 0; i < input->buf_size; ++i) {
+        rtafe_sample_t in  = static_cast<float>(in_buf[i]);
+        rtafe_sample_t out = in - state_.x[0] +
+                    dc_params_.alpha * state_.y[0];
+
         state_.x[0] = in;
         state_.y[0] = out;
-        in_buf[i]   = out;
+        out_buf[i] = static_cast<rtafe_sample_t>(out);
     }
+
+    return kRtafeStatusOk;
 }
 
-void DCRemoval::ProcessBlockFixed(DSPBlock *dsp_block)
+rtafe_module_status_t DCRemoval::GetParam(rtafe_module_param_t *param) const
 {
-    sample_t *in_buf = dsp_block->GetDSPBuffer();
-    for(int i = 0; i < dsp_block->GetBlockSize(); i++) {
-        s16 in = (s16)in_buf[i];
-        s32 acc = (s32)in - (s32)state_.x[0] + ((((s32)alpha_fixed_) * ((s32)state_.y[0])) >> Q2_14_SHIFT);
-        s16 out = CLIP_S16(acc);
-        state_.x[0] = in;
-        state_.y[0] = out;
-        in_buf[i]   = out;
+    if (param == nullptr) {
+        return kRtafeStatusInvalidArgument;
     }
+    if(param->id != kRtafeParamIdDCRemoval_Alpha) {
+        return kRtafeStatusInvalidArgument;
+    }
+    *param = param_;
+
+    return kRtafeStatusOk;
 }
 
-void DCRemoval::SetCoeffs(float alpha)
+rtafe_module_status_t DCRemoval::Init(
+    const rtafe_module_properties_t *properties)
 {
-    alpha_       = alpha;
-    alpha_fixed_ = FLOAT_TO_Q2_14(alpha);
+    if (properties == nullptr) {
+        return kRtafeStatusInvalidArgument;
+    }
+
+    properties_ = *properties;
+    return Reset();
+}
+
+rtafe_module_status_t DCRemoval::SetProperties(const rtafe_module_properties_t *properties)
+{
+    if (properties == nullptr) {
+        return kRtafeStatusInvalidArgument;
+    }
+    properties_ = *properties;
+
+    return kRtafeStatusOk;
+}
+
+rtafe_module_status_t DCRemoval::GetStaticProperties(rtafe_module_properties_t *properties) const
+{
+    /*unused*/
+    (void)properties;
+    return kRtafeStatusUnsupported;
+}
+
+rtafe_module_status_t DCRemoval::GetProperties(
+    rtafe_module_properties_t *properties) const
+{
+    if (properties == nullptr) {
+        return kRtafeStatusInvalidArgument;
+    }
+
+    *properties = properties_;
+    return kRtafeStatusOk;
+}
+
+rtafe_module_status_t DCRemoval::Reset()
+{
+    state_ = {};
+    return kRtafeStatusOk;
+}
+
+rtafe_module_status_t DCRemoval::SetParam(const rtafe_module_param_t *param)
+{
+    if (param == nullptr || param->data == nullptr) {
+        return kRtafeStatusInvalidArgument;
+    }
+    if (param->size != kDCRemovalModuleParamsSize) {
+        return kRtafeStatusInvalidArgument;
+    }
+    if(param->id != kRtafeParamIdDCRemoval_Alpha) {
+        return kRtafeStatusInvalidArgument;
+    }
+    const tByte *data = static_cast<const tByte *>(param->data);
+
+    /*extract params from params payload*/
+    u16 alpha_fixed = (u16)data[0] | ((u16)data[1] << 8);
+
+    dc_params_.alpha_fixed = alpha_fixed;
+    dc_params_.alpha       = Q8_8_TO_FLOAT(alpha_fixed);
+    param_data_[0] = data[0];
+    param_data_[1] = data[1];
+    param_ = *param;
+    param_.data = param_data_;
+
+    return kRtafeStatusOk;
 }

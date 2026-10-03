@@ -6,18 +6,19 @@
 #include "errors_code.hpp"
 
 typedef enum rtafe_module_status {
-    RTAFE_STATUS_OK = 0,
-    RTAFE_STATUS_INVALID_ARGUMENT = 1,
-    RTAFE_STATUS_OUT_OF_MEMORY = 2,
-    RTAFE_STATUS_UNSUPPORTED = 3,
-    RTAFE_STATUS_INVALID_STATE = 4,
-    RTAFE_STATUS_INVALID_BUFFER = 5
+    kRtafeStatusOk = 0,
+    kRtafeStatusInvalidArgument,
+    kRtafeStatusOutOfMemory,
+    kRtafeStatusUnsupported,
+    kRtafeStatusInvalidState,
+    kRtafeStatusInvalidBuffer
 } rtafe_module_status_t;
 
 typedef enum rtafe_sample_format {
-    RTAFE_SAMPLE_Q15 = 0,
-    RTAFE_SAMPLE_Q31 = 1,
-    RTAFE_SAMPLE_FLOAT32 = 2
+    kRtafeSampleQ15 = 0,
+    kRtafeSampleQ31,
+    kRtafeSampleQ8_8,
+    kRtafeSampleFloat32
 } rtafe_sample_format_t;
 
 typedef struct rtafe_stream {
@@ -30,17 +31,23 @@ typedef struct rtafe_stream {
 
 typedef struct rtafe_module_properties {
     uint32_t              sample_rate;
-    uint32_t              frame_samples;
+    uint32_t              frame_samples; /** Number of samples in each frame */
     uint32_t              channel_count;
     uint32_t              latency_samples;
     rtafe_sample_format_t format;
 } rtafe_module_properties_t;
 
+/* parameter is an array of parameters, each element is one byte */
 typedef struct rtafe_module_param {
     uint32_t    id;
     const void *data;
     size_t      size;
 } rtafe_module_param_t;
+
+typedef struct rtafe_process_buf {
+    void*  buffer;
+    size_t buf_size;
+} rtafe_process_buf_t;
 
 typedef struct rtafe_module rtafe_module_t;
 
@@ -63,9 +70,7 @@ public:
      * @return The status of the operation.
      */
     virtual rtafe_module_status_t Init(
-        const rtafe_module_properties_t *properties,
-        void *state,
-        size_t state_size);
+        const rtafe_module_properties_t *properties);
 
     /**
      * Process the input stream and produce the output stream.
@@ -74,8 +79,8 @@ public:
      * @return The status of the operation.
      */
     virtual rtafe_module_status_t Process(
-        const rtafe_stream_t *input,
-        rtafe_stream_t *output);
+        const rtafe_process_buf_t *input,
+              rtafe_process_buf_t *output);
 
     /**
      * Set a parameter of the module.
@@ -113,17 +118,12 @@ public:
      * Reset the module to its initial state.
      * @return The status of the operation.
      */
-        virtual rtafe_module_status_t Reset();
+    virtual rtafe_module_status_t Reset();
 
     /**
      * End the module and release any resources.
      */
-        virtual void End();
-
-    virtual HtspErrRet SetParams(const DSPModuleParams *params,
-                                 u16 param_count) = 0;
-    virtual void ProcessBlock(DSPBlock *dsp_block) = 0;
-    virtual void ProcessBlockFixed(DSPBlock *dsp_block) = 0;
+    virtual void End();
 
     rtafe_module_properties_t properties_{};
 };

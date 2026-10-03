@@ -188,22 +188,32 @@ HtspErrRet HTSPPlugin::SetChannelPipeline(ChannelId channel_id,
 
 HtspErrRet HTSPPlugin::SetParams()
 {
-    /* I think this function should do some parsing from config file to get the parameters for each module */
-    /* For now, let see manually */
-    DSPModuleParams dc_params[1] = {0.995f};  /* DC removal alpha */
-    DSPModuleParams pre_emphasis_params[1] = {0.97f};
+    /*TODO: read from config file, not hardcode like this*/
+    const u16 dc_alpha_fixed = FLOAT_TO_Q8_8(0.995f);
+    const u16 pre_alpha_fixed = FLOAT_TO_Q8_8(0.97f);
+    const tByte dc_alpha[2] = {
+        static_cast<tByte>(dc_alpha_fixed & 0xFF),
+        static_cast<tByte>((dc_alpha_fixed >> 8) & 0xFF)
+    };
+    const tByte pre_alpha[2] = {
+        static_cast<tByte>(pre_alpha_fixed & 0xFF),
+        static_cast<tByte>((pre_alpha_fixed >> 8) & 0xFF)
+    };
 
     for (u16 channel = 0; channel < HTSP_MAX_CHANNELS; channel++) {
-        HtspErrRet status = dc_removal_modules_[channel].SetParams(
-            dc_params, DC_MODULE_PARAMS_COUNT);
-        if (status != kOk) return status;
+        rtafe_module_param_t dc_param = {
+            kRtafeParamIdDCRemoval_Alpha, dc_alpha, sizeof(dc_alpha)
+        };
+        rtafe_module_param_t pre_param = {
+            kRtafeParamIdPreEmphasis_Alpha, pre_alpha, sizeof(pre_alpha)
+        };
 
-        status = pre_emphasis_modules_[channel].SetParams(
-            pre_emphasis_params, PRE_EMPHASIS_MODULE_PARAMS_COUNT);
-        if (status != kOk) return status;
-
-        status = noise_suppress_modules_[channel].SetParams(nullptr, 0);
-        if (status != kOk) return status;
+        if (dc_removal_modules_[channel].SetParam(&dc_param) !=
+                kRtafeStatusOk ||
+            pre_emphasis_modules_[channel].SetParam(&pre_param) !=
+                kRtafeStatusOk) {
+            return kErrorInvalidModuleParam;
+        }
     }
 
     return kOk;

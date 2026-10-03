@@ -53,8 +53,8 @@
 
 #include "IRtafe_module.hpp"
 #include "utils.hpp"
-#include "errors_code.hpp"
 #include "fft.h"
+#include "rtafe_params_id.h"
 
 /**
  * Spectral Subtraction Noise Suppression
@@ -90,10 +90,20 @@ public:
     NoiseSuppress();
     ~NoiseSuppress() override = default;
 
-    HtspErrRet SetParams(const DSPModuleParams *params,
-                         u16 param_count) override;
-    void ProcessBlock(DSPBlock *dsp_block) override;
-    void ProcessBlockFixed(DSPBlock *dsp_block) override;
+    rtafe_module_status_t Init(
+        const rtafe_module_properties_t *properties) override;
+    rtafe_module_status_t Process(
+        const rtafe_process_buf_t *input,
+        rtafe_process_buf_t *output) override;
+    rtafe_module_status_t SetParam(
+        const rtafe_module_param_t *param) override;
+    rtafe_module_status_t GetParam(
+        rtafe_module_param_t *param) const override;
+    rtafe_module_status_t SetProperties(
+        const rtafe_module_properties_t *properties) override;
+    rtafe_module_status_t GetProperties(
+        rtafe_module_properties_t *properties) const override;
+    rtafe_module_status_t Reset() override;
 
 private:
     /* 50% overlap-add state */

@@ -37,7 +37,13 @@ HtspErrRet DSPPipeline::ProcessDSPPipeline(DSPBlock *dsp_block)
         if(module == nullptr) {
             return kErrorNullModuleParam;
         }
-        module->ProcessBlock(dsp_block);
+        rtafe_process_buf_t buffer = {
+            dsp_block->GetDSPBuffer(),
+            dsp_block->GetBlockSize()
+        };
+        if (module->Process(&buffer, &buffer) != kRtafeStatusOk) {
+            return kErrorProcessing;
+        }
     }
 
     return kOk;
@@ -45,17 +51,5 @@ HtspErrRet DSPPipeline::ProcessDSPPipeline(DSPBlock *dsp_block)
 
 HtspErrRet DSPPipeline::ProcessDSPPipelineFixed(DSPBlock *dsp_block)
 {
-    if (dsp_block == nullptr) {
-        return kErrorNullModuleParam;
-    }
-
-    for (u16 i = 0; i < num_modules_; i++) {
-        IRtafeModule *module = processing_chain_[i];
-        if (module == nullptr) {
-            return kErrorNullModuleParam;
-        }
-        module->ProcessBlockFixed(dsp_block);
-    }
-
-    return kOk;
+    return ProcessDSPPipeline(dsp_block);
 }
