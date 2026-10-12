@@ -1,5 +1,5 @@
 #include "wav_file_mgr.hpp"
-#include "htsp_plugin.hpp"
+#include "rtafe_plugin.hpp"
 #include "utils.hpp"
 
 #include <cstdio>
@@ -28,14 +28,19 @@ static bool processWavFile(const char *inputFile, const char *outputFile)
         return false;
     }
 
-    HTSPPlugin htsp_plugin;
-    HtspErrRet ret = htsp_plugin.SetParams();
-    if (ret != kOk) {
-        std::printf("DSP parameter configuration error: %d\n", ret);
-        wav.vCloseWrite();
-        wav.vCloseRead();
-        return false;
-    }
+    buffer_pool_config_t buffer_pool_config{};
+    buffer_pool_config.block_size = 768;
+    buffer_pool_config.num_blocks = 128;
+
+    rtafe_plugin_config_t config{};
+    config.sampling_rate      = wav.uGetSampleRate();
+    config.frame_samples      = frameSize;
+    config.channel_count      = numChannels;
+    config.hop_samples        = frameSize; // no overlap
+    config.format             = kRtafeSampleQ15; // or kRtafeSample
+    config.buffer_pool_config = buffer_pool_config;
+
+    RTAFE_MainPlugin rtafe_plugin(config);
 
     while (wav.bHasNextFrame()) {
         sample_t **channels = wav.ppReadFrame();
@@ -45,11 +50,13 @@ static bool processWavFile(const char *inputFile, const char *outputFile)
             wav.vCloseRead();
             return false;
         }
+        
+        rtf_error_code_t ret;
 
         #ifdef FIXED_POINT
-        ret = htsp_plugin.ProcessFixed(channels, numChannels);
+        ret = rtafe_plugin.ProcessFixed(channels, numChannels);
         #else
-        ret = htsp_plugin.Process(channels, numChannels);
+        ret = rtafe_plugin.Process(channels, numChannels);
         #endif
         if (ret != kOk) {
             std::printf("DSP processing error: %d\n", ret);

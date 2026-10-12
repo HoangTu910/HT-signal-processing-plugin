@@ -109,6 +109,7 @@ COMMON_FLAGS=(
     -O2
     -Wall
     -Wextra
+    -I"$ROOT_DIR"
     -I"$SRC_DIR"
     -I"$WAV_DIR"
     -I"$PLUGIN_DIR"
@@ -132,7 +133,7 @@ if [ -n "$TARGET_FLAGS" ]; then
 fi
 
 C_SRCS=(
-    "$MODULE_DIR/fft.c"
+    "$ROOT_DIR/utils/fft.c"
 )
 
 CXX_SRCS=(

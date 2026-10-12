@@ -4,8 +4,9 @@
 #include "IRtafe_module.hpp"
 #include "utils.hpp"
 #include "dsp_block.hpp"
-#include "errors_code.hpp"
-#include "rtafe_params_id.h"
+#include "common/errors_code.hpp"
+#include "common/rtafe_params_id.h"
+#include "common/rtafe_types.h"
 
 /** Direct form I from Richard Lyons */
 /** Difference equation for Direct Form I

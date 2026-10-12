@@ -68,6 +68,7 @@ COMMON_FLAGS=(
     -Wextra
     -ffunction-sections
     -fdata-sections
+    -I"$ROOT_DIR"
     -I"$ROOT_DIR/capi_v2"
     -I"$ROOT_DIR/src"
     -I"$ROOT_DIR/src/plugin"
@@ -104,7 +105,7 @@ if [[ "$ARCH" == cortex-m3 ]]; then
 fi
 
 C_SOURCES=(
-    "$ROOT_DIR/src/module/fft.c"
+    "$ROOT_DIR/utils/fft.c"
 )
 CXX_SOURCES=(
     "$ROOT_DIR/src/plugin/htsp_plugin.cpp"

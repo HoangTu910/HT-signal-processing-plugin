@@ -5,7 +5,9 @@
 #ifndef RTAFE_BARE_METAL
 #include <math.h>
 #endif
+#ifndef UTILS_HPP
 #include "utils.hpp"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,9 +29,15 @@ typedef struct {
 void fft(complex_t *x, int N);
 void ifft(complex_t *x, int N);
 
+#define FFT(x, N) fft((x), (N))
+#define IFFT(x, N) ifft((x), (N))
+
 /* fixed point */
 int fft_fixed(complex_fixed_t *x, int N);
 void ifft_fixed(complex_fixed_t *x, int N);
+
+#define FFT_FIXED(x, N) fft_fixed((x), (N))
+#define IFFT_FIXED(x, N) ifft_fixed((x), (N))
 
 
 /* fixed point but use block floating point */

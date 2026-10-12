@@ -2,7 +2,7 @@
 #define PRE_EMPHASIS_HPP
 
 #include "IRtafe_module.hpp"
-#include "rtafe_params_id.h"
+#include "common/rtafe_params_id.h"
 
 const u16 kPreEmphasisModuleParamsSize = 2;
 

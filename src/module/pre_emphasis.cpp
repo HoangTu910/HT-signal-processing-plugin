@@ -1,5 +1,16 @@
 #include "pre_emphasis.hpp"
 
+PreEmphasis::PreEmphasis(float pre_emphasis_factor)
+    : IRtafeModule(),
+      pre_em_params_{}
+{
+    pre_em_params_.alpha = pre_emphasis_factor;
+    pre_em_params_.alpha_fixed = FLOAT_TO_Q8_8(pre_emphasis_factor);
+    param_.id = kRtafeParamIdPreEmphasis_Alpha;
+    param_.size = kPreEmphasisModuleParamsSize;
+    param_.data = param_data_;
+}
+
 rtafe_module_status_t PreEmphasis::Init(
     const rtafe_module_properties_t *properties)
 {
@@ -37,7 +48,7 @@ rtafe_module_status_t PreEmphasis::Process(
     return kRtafeStatusOk;
 }
 
- rtafe_module_status_t PreEmphasis::SetParam(
+rtafe_module_status_t PreEmphasis::SetParam(
     const rtafe_module_param_t *param)
 {
     if (param == nullptr || param->data == nullptr ||
@@ -57,7 +68,7 @@ rtafe_module_status_t PreEmphasis::Process(
     return kRtafeStatusOk;
 }
 
- rtafe_module_status_t PreEmphasis::GetParam(
+rtafe_module_status_t PreEmphasis::GetParam(
     rtafe_module_param_t *param) const
 {
     if (param == nullptr || param->id != kRtafeParamIdPreEmphasis_Alpha) {
@@ -68,7 +79,7 @@ rtafe_module_status_t PreEmphasis::Process(
     return kRtafeStatusOk;
 }
 
- rtafe_module_status_t PreEmphasis::SetProperties(
+rtafe_module_status_t PreEmphasis::SetProperties(
     const rtafe_module_properties_t *properties)
 {
     if (properties == nullptr) {
@@ -79,7 +90,7 @@ rtafe_module_status_t PreEmphasis::Process(
     return kRtafeStatusOk;
 }
 
- rtafe_module_status_t PreEmphasis::GetProperties(
+rtafe_module_status_t PreEmphasis::GetProperties(
     rtafe_module_properties_t *properties) const
 {
     if (properties == nullptr) {
@@ -90,7 +101,7 @@ rtafe_module_status_t PreEmphasis::Process(
     return kRtafeStatusOk;
 }
 
- rtafe_module_status_t PreEmphasis::Reset()
+rtafe_module_status_t PreEmphasis::Reset()
 {
     state_ = {};
     return kRtafeStatusOk;

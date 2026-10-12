@@ -1,5 +1,4 @@
-#include "module/fft.h"
-#include "utils.h"
+#include "utils/fft.h"
 #include <math.h>
 #include <stdio.h>
 

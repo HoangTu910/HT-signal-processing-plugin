@@ -52,6 +52,7 @@ void *BufferManager::Alloc()
     MemoryPool *mem_pool = mem_pool_;
 #endif
     if(mem_pool->free_list_buffer == nullptr) {
+        FE_ERROR("No free buffers available in the memory pool.");
         return nullptr;
     }
 

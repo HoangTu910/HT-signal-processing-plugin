@@ -35,6 +35,7 @@ C_COMMON_FLAGS=(
     -ffreestanding
     -ffunction-sections
     -fdata-sections
+    -I"$ROOT_DIR"
     -I"$ROOT_DIR/capi_v2"
     -I"$ROOT_DIR/src"
     -I"$ROOT_DIR/src/plugin"

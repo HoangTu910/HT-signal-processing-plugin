@@ -2,8 +2,9 @@
 #define BUFFER_POOL_HPP
 
 #include "utils.hpp"
+#include "common/rtafe_types.h"
 
-#define BLOCK_SIZE 256
+#define BLOCK_SIZE 768
 #define NUM_BLOCKS 128
 
 typedef struct FreeBuffer {

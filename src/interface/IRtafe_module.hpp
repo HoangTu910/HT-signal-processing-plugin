@@ -3,7 +3,7 @@
 
 #include "utils.hpp"
 #include "dsp_block.hpp"
-#include "errors_code.hpp"
+#include "common/errors_code.hpp"
 
 typedef enum rtafe_module_status {
     kRtafeStatusOk = 0,

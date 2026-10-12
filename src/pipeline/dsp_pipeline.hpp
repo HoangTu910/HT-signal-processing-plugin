@@ -5,7 +5,7 @@
 #include "dc_removal.hpp"
 #include "pre_emphasis.hpp"
 #include "noise_suppress.hpp"
-#include "errors_code.hpp"
+#include "common/errors_code.hpp"
 
 class DSPPipeline {
 public:

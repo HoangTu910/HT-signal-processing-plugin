@@ -19,6 +19,10 @@ NoiseSuppress::NoiseSuppress()
 
 void NoiseSuppress::InitNoiseState(int frame_size)
 {
+    if (frame_size <= 0 || frame_size > MAX_FRAME_SIZE) {
+        return;
+    }
+
     if (!min_stat_state_.is_initialized || min_stat_state_.last_frame_size != frame_size) {
         memset(min_stat_state_.smooth, 0, sizeof(float) * frame_size);
         min_stat_state_.is_initialized = true;
@@ -26,7 +30,7 @@ void NoiseSuppress::InitNoiseState(int frame_size)
     }
 }
 
- rtafe_module_status_t NoiseSuppress::Init(
+rtafe_module_status_t NoiseSuppress::Init(
     const rtafe_module_properties_t *properties)
 {
     if (properties == nullptr) {
@@ -37,14 +41,15 @@ void NoiseSuppress::InitNoiseState(int frame_size)
     return Reset();
 }
 
- rtafe_module_status_t NoiseSuppress::Process(
+rtafe_module_status_t NoiseSuppress::Process(
     const rtafe_process_buf_t *input,
     rtafe_process_buf_t *output)
 {
-    if (input == nullptr || output == nullptr || input->buffer == nullptr ||
-        output->buffer == nullptr || input->buf_size != output->buf_size ||
+    if (input == nullptr || output == nullptr ||
+        input->buffer == nullptr || output->buffer == nullptr ||
+        input->buf_size == 0 || input->buf_size != output->buf_size ||
         input->buf_size != properties_.frame_samples ||
-        input->buf_size != MAX_FRAME_SIZE / 2) {
+        input->buf_size > (MAX_FRAME_SIZE / 2)) {
         return kRtafeStatusInvalidBuffer;
     }
 
@@ -55,6 +60,10 @@ void NoiseSuppress::InitNoiseState(int frame_size)
 
     const int hop = static_cast<int>(input->buf_size);
     const int frame_size = hop * 2;
+    if (frame_size > MAX_FRAME_SIZE) {
+        return kRtafeStatusInvalidBuffer;
+    }
+
     InitNoiseState(frame_size);
 
     float windowed[MAX_FRAME_SIZE];
@@ -71,11 +80,11 @@ void NoiseSuppress::InitNoiseState(int frame_size)
         Y[i].real = windowed[i];
         Y[i].imag = 0.0f;
     }
-    fft(Y, frame_size);
+    FFT(Y, frame_size);
 
     float Pyy[MAX_FRAME_SIZE];
     for (int i = 0; i < frame_size; ++i) {
-        float power = Y[i].real * Y[i].real + Y[i].imag * Y[i].imag;
+        const float power = Y[i].real * Y[i].real + Y[i].imag * Y[i].imag;
         min_stat_state_.smooth[i] =
             ALPHA_SMOOTH * min_stat_state_.smooth[i] +
             (1.0f - ALPHA_SMOOTH) * power;
@@ -103,19 +112,20 @@ void NoiseSuppress::InitNoiseState(int frame_size)
 
     complex_t S[MAX_FRAME_SIZE];
     for (int i = 0; i < frame_size; ++i) {
-        float power = Y[i].real * Y[i].real + Y[i].imag * Y[i].imag;
+        const float power = Y[i].real * Y[i].real + Y[i].imag * Y[i].imag;
         float gain = BETA_FLOOR;
-        if (power > 0.0f) {
-            gain = fmaxf(BETA_FLOOR, 1.0f - Pnoise[i] / power);
+        if (power > 1.0e-8f) {
+            const float ratio = fminf(1.0f, Pnoise[i] / power);
+            gain = fmaxf(BETA_FLOOR, 1.0f - ratio);
         }
         S[i].real = gain * Y[i].real;
         S[i].imag = gain * Y[i].imag;
     }
 
-    ifft(S, frame_size);
+    IFFT(S, frame_size);
 
     for (int i = 0; i < hop; ++i) {
-        float output_sample = S[i].real + overlap_out_[i];
+        const float output_sample = S[i].real + overlap_out_[i];
         out_buf[i] = static_cast<rtafe_sample_t>(output_sample);
         overlap_out_[i] = S[hop + i].real;
     }
@@ -165,11 +175,11 @@ void NoiseSuppress::InitNoiseState(int frame_size)
     return kRtafeStatusOk;
 }
 
- rtafe_module_status_t NoiseSuppress::Reset()
+rtafe_module_status_t NoiseSuppress::Reset()
 {
     memset(overlap_in_, 0, sizeof(overlap_in_));
     memset(overlap_out_, 0, sizeof(overlap_out_));
-    memset(&min_stat_state_, 0, sizeof(min_stat_state_));
+    min_stat_state_ = {};
     return kRtafeStatusOk;
 }
 

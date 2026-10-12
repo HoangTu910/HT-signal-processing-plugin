@@ -53,8 +53,8 @@
 
 #include "IRtafe_module.hpp"
 #include "utils.hpp"
-#include "fft.h"
-#include "rtafe_params_id.h"
+#include "utils/fft.h"
+#include "common/rtafe_params_id.h"
 
 /**
  * Spectral Subtraction Noise Suppression
