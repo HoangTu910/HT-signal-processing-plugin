@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include "dsp_block.hpp"
 #include "common/errors_code.hpp"
+#include "fader.hpp"
 
 constexpr u16 kRtafeMaxModule = 3;
 
@@ -32,12 +33,16 @@ typedef struct rtafe_stream {
 } rtafe_stream_t;
 
 typedef struct rtafe_module_properties {
-    uint32_t              sample_rate;
-    uint32_t              frame_samples; /** Number of samples in each frame */
-    uint32_t              channel_count;
-    uint32_t              latency_samples;
-    rtafe_sample_format_t format;
+    uint32_t               sample_rate;
+    uint32_t               frame_samples; /** Number of samples in each frame */
+    uint32_t               channel_count;
+    uint32_t               latency_samples;
+    rtafe_sample_format_t  format;
 } rtafe_module_properties_t;
+
+typedef struct rtafe_module_utils {
+    Fader* fader;
+} rtafe_module_utils_t;
 
 /* parameter is an array of parameters, each element is one byte */
 typedef struct rtafe_module_param {
@@ -67,7 +72,8 @@ public:
      * @return The status of the operation.
      */
     virtual rtafe_module_status_t Init(
-        const rtafe_module_properties_t *properties);
+        const rtafe_module_properties_t *properties,
+        const rtafe_module_utils_t      *utils);
 
     /**
      * Process the input stream and produce the output stream.

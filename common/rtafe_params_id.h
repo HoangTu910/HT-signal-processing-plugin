@@ -4,13 +4,15 @@
 enum rtafe_module_param_id {
     kRtafeParamIdDCRemoval_Alpha = 0,
     kRtafeParamIdPreEmphasis_Alpha,
-    kRtafeParamIdNoiseSuppress_Alpha
+    kRtafeParamIdNoiseSuppress_Alpha,
+    kRtafeParamIdVolumeControl_Gain,
 };
 
 enum rtafe_module_id {
-    kRtafeDCRemoval = 0,  //DC Removal
-    kRtafePreEmphasis,    //Pre-Emphasis
-    kRtafeNoiseSuppress   //Noise Suppression
+    kRtafeDCRemoval = 0,
+    kRtafePreEmphasis,
+    kRtafeNoiseSuppress,
+    kRtafeVolumeControl,
 };
 
 #endif

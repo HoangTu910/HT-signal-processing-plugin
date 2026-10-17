@@ -30,7 +30,8 @@ public:
         rtafe_module_properties_t *properties) const override;
 
     rtafe_module_status_t Init(
-        const rtafe_module_properties_t *properties) override;
+        const rtafe_module_properties_t *properties,
+        const rtafe_module_utils_t      *utils) override;
 
     rtafe_module_status_t SetProperties(
         const rtafe_module_properties_t *properties) override;
