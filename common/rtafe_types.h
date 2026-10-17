@@ -55,6 +55,11 @@ typedef tFloat rtafe_sample_t;
 #endif
 typedef rtafe_sample_t sample_t;
 
+typedef struct rtafe_process_buf {
+    void*  buffer;
+    size_t buf_size;
+} rtafe_process_buf_t;
+
 enum ChannelId : u16 {
     kMono,
     kLeftFront,

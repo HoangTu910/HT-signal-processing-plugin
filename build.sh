@@ -4,7 +4,6 @@ set -euo pipefail
 
 ARCH="x86"
 TYPE="FLOATING_POINT"
-PIPELINE="SPEECH_1C"
 
 for arg in "$@"; do
     case "$arg" in
@@ -14,19 +13,16 @@ for arg in "$@"; do
         --type=*)
             TYPE="${arg#*=}"
             ;;
-        --pipeline=*)
-            PIPELINE="${arg#*=}"
-            ;;
         -h|--help)
             cat <<EOF
-Usage: ./build.sh [--arch=x86|arm] [--type=FIXED_POINT|FLOATING_POINT] [--pipeline=AUDIO_4C|SPEECH_1C]
+Usage: ./build.sh [--arch=x86|arm] [--type=FIXED_POINT|FLOATING_POINT]
 
 Builds the WAV processing plugin binary from src/test_plugin_main.cpp.
 
 Examples:
   ./build.sh
-  ./build.sh --arch=x86 --type=FLOATING_POINT --pipeline=SPEECH_1C
-  ./build.sh --arch=arm --type=FIXED_POINT --pipeline=SPEECH_1C
+  ./build.sh --arch=x86 --type=FLOATING_POINT
+  ./build.sh --arch=arm --type=FIXED_POINT
 EOF
             exit 0
             ;;
@@ -41,7 +37,6 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$ROOT_DIR/src"
 WAV_DIR="$SRC_DIR/wav"
 PLUGIN_DIR="$SRC_DIR/plugin"
-PIPELINE_DIR="$SRC_DIR/pipeline"
 MODULE_DIR="$SRC_DIR/module"
 BUFFER_DIR="$SRC_DIR/buffer"
 INTERFACE_DIR="$SRC_DIR/interface"
@@ -89,22 +84,6 @@ case "$TYPE" in
         ;;
 esac
 
-case "$PIPELINE" in
-    AUDIO_4C)
-        PIPELINE_FLAGS="-DDSP_PIPELINE_AUDIO_FOUR_CHANNELS"
-        ;;
-    SPEECH_1C)
-        PIPELINE_FLAGS="-DDSP_PIPELINE_SPEECH_PRE_PROCESSING"
-        ;;
-    MUL_CH)
-        PIPELINE_FLAGS=""
-        ;;
-    *)
-        echo "Unsupported pipeline: $PIPELINE"
-        exit 1
-        ;;
-esac
-
 COMMON_FLAGS=(
     -O2
     -Wall
@@ -113,7 +92,6 @@ COMMON_FLAGS=(
     -I"$SRC_DIR"
     -I"$WAV_DIR"
     -I"$PLUGIN_DIR"
-    -I"$PIPELINE_DIR"
     -I"$MODULE_DIR"
     -I"$BUFFER_DIR"
     -I"$INTERFACE_DIR"
@@ -122,10 +100,6 @@ COMMON_FLAGS=(
 
 if [ -n "$TYPE_FLAGS" ]; then
     COMMON_FLAGS+=("$TYPE_FLAGS")
-fi
-
-if [ -n "$PIPELINE_FLAGS" ]; then
-    COMMON_FLAGS+=("$PIPELINE_FLAGS")
 fi
 
 if [ -n "$TARGET_FLAGS" ]; then
@@ -138,8 +112,7 @@ C_SRCS=(
 
 CXX_SRCS=(
     "$SRC_DIR/test_plugin_main.cpp"
-    "$PLUGIN_DIR/htsp_plugin.cpp"
-    "$PIPELINE_DIR/dsp_pipeline.cpp"
+    "$PLUGIN_DIR/rtafe_plugin.cpp"
     "$MODULE_DIR/dc_removal.cpp"
     "$MODULE_DIR/pre_emphasis.cpp"
     "$MODULE_DIR/noise_suppress.cpp"
@@ -152,7 +125,7 @@ CXX_SRCS=(
 rm -f "$OUT"
 rm -f "$OBJ_DIR"/*.o
 
-echo "Building $OUT (arch=$ARCH, type=$TYPE, pipeline=$PIPELINE)"
+echo "Building $OUT (arch=$ARCH, type=$TYPE)"
 
 for src in "${C_SRCS[@]}"; do
     obj="$OBJ_DIR/$(basename "${src%.*}").o"

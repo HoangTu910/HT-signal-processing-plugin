@@ -72,7 +72,6 @@ COMMON_FLAGS=(
     -I"$ROOT_DIR/capi_v2"
     -I"$ROOT_DIR/src"
     -I"$ROOT_DIR/src/plugin"
-    -I"$ROOT_DIR/src/pipeline"
     -I"$ROOT_DIR/src/module"
     -I"$ROOT_DIR/src/buffer"
     -I"$ROOT_DIR/src/interface"
@@ -108,8 +107,7 @@ C_SOURCES=(
     "$ROOT_DIR/utils/fft.c"
 )
 CXX_SOURCES=(
-    "$ROOT_DIR/src/plugin/htsp_plugin.cpp"
-    "$ROOT_DIR/src/pipeline/dsp_pipeline.cpp"
+    "$ROOT_DIR/src/plugin/rtafe_plugin.cpp"
     "$ROOT_DIR/src/module/dc_removal.cpp"
     "$ROOT_DIR/src/module/pre_emphasis.cpp"
     "$ROOT_DIR/src/module/noise_suppress.cpp"

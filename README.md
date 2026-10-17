@@ -24,7 +24,6 @@ audio_reach/   Public AudioReach-facing headers (CAPIv2 placeholder)
 src/audio_reach/       AudioReach CAPIv2 adapter boundary
 src/interface/         Internal C++ module interfaces
 src/module/            DSP implementations
-src/pipeline/          DSP pipeline composition
 src/plugin/            HTSP plugin orchestration
 renode/                Cortex-M3 harness and platform files
 lib/                   Static-library build script and output
@@ -72,6 +71,5 @@ The problem is how to find *D(k)*, there are also several ways to estimate the n
 <img width="1908" height="306" alt="Noisy Signal" src="https://github.com/user-attachments/assets/e8bb9a77-0568-4f90-b2c0-b003499987a1" />
 
 <img width="1908" height="306" alt="Processed Signal" src="https://github.com/user-attachments/assets/0335db42-b914-42a8-880e-b4e64677d792" />
-
 
 

@@ -113,5 +113,8 @@ rtafe_module_status_t DCRemoval::SetParam(const rtafe_module_param_t *param)
     param_ = *param;
     param_.data = param_data_;
 
+    FE_LOG("\nDCRemoval::SetParam: alpha_fixed = %u, alpha = %f\n",
+           dc_params_.alpha_fixed, dc_params_.alpha);
+
     return kRtafeStatusOk;
 }

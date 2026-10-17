@@ -65,6 +65,9 @@ rtafe_module_status_t PreEmphasis::SetParam(
     param_data_[1] = data[1];
     param_ = *param;
     param_.data = param_data_;
+
+    FE_LOG("\nPreEmphasis: SetParam: alpha = %f, alpha_fixed = %u",
+                  pre_em_params_.alpha, pre_em_params_.alpha_fixed);
     return kRtafeStatusOk;
 }
 

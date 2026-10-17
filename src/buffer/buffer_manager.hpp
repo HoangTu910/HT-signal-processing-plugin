@@ -4,9 +4,6 @@
 #include "utils.hpp"
 #include "common/rtafe_types.h"
 
-#define BLOCK_SIZE 768
-#define NUM_BLOCKS 128
-
 typedef struct FreeBuffer {
     // Points to the next free buffer in the pool.
     FreeBuffer *next = nullptr;

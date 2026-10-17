@@ -5,6 +5,8 @@
 #include "dsp_block.hpp"
 #include "common/errors_code.hpp"
 
+constexpr u16 kRtafeMaxModule = 3;
+
 typedef enum rtafe_module_status {
     kRtafeStatusOk = 0,
     kRtafeStatusInvalidArgument,
@@ -43,11 +45,6 @@ typedef struct rtafe_module_param {
     const void *data;
     size_t      size;
 } rtafe_module_param_t;
-
-typedef struct rtafe_process_buf {
-    void*  buffer;
-    size_t buf_size;
-} rtafe_process_buf_t;
 
 typedef struct rtafe_module rtafe_module_t;
 

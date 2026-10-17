@@ -39,7 +39,6 @@ C_COMMON_FLAGS=(
     -I"$ROOT_DIR/capi_v2"
     -I"$ROOT_DIR/src"
     -I"$ROOT_DIR/src/plugin"
-    -I"$ROOT_DIR/src/pipeline"
     -I"$ROOT_DIR/src/module"
     -I"$ROOT_DIR/src/buffer"
     -I"$ROOT_DIR/src/interface"

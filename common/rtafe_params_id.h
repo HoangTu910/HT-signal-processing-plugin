@@ -2,9 +2,15 @@
 #define RTAFE_PARAMS_ID_H
 
 enum rtafe_module_param_id {
-    kRtafeParamIdPreEmphasis_Alpha = 0,
-    kRtafeParamIdDCRemoval_Alpha,
+    kRtafeParamIdDCRemoval_Alpha = 0,
+    kRtafeParamIdPreEmphasis_Alpha,
     kRtafeParamIdNoiseSuppress_Alpha
+};
+
+enum rtafe_module_id {
+    kRtafeDCRemoval = 0,  //DC Removal
+    kRtafePreEmphasis,    //Pre-Emphasis
+    kRtafeNoiseSuppress   //Noise Suppression
 };
 
 #endif
